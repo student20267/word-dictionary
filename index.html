@@ -67,79 +67,54 @@
         function save() {
             localStorage.setItem('words', JSON.stringify(words));
         }
-        function loadWords() {
+        
+        function renderWords() {
+            wordsList.innerHTML = '';
             for (const w of words) {
                 const newDiv = document.createElement('div');
                 const word = document.createElement('h2');
                 const pronunciation = document.createElement('p');
                 const translate = document.createElement('p');
                 const language = document.createElement('p');
-                const deleteBtn = document.createElement('button');
+                const deleteButton = document.createElement('button');
 
                 word.textContent = w.word;
                 pronunciation.className = 'pronunciation';
                 pronunciation.textContent = `[${w.pronunciation}]`;
                 translate.textContent = w.translate;
                 language.textContent = w.language;
-                deleteBtn.textContent = 'Delete';
-                deleteBtn.className = 'deleteWordBtn';
+                deleteButton.textContent = 'Delete';
+                deleteButton.className = 'deleteWordBtn';
                 newDiv.appendChild(word);
                 newDiv.appendChild(pronunciation);
                 newDiv.appendChild(translate);
                 newDiv.appendChild(language);
-                newDiv.appendChild(deleteBtn);
+                newDiv.appendChild(deleteButton);
                 wordsList.appendChild(newDiv);
-                deleteBtn.addEventListener('click', () => {
+                deleteButton.addEventListener('click', () => {
                     if (confirm(`❌ Are you sure you want to delete ${word.textContent}?`)) {
                         const index = words.findIndex(wo => wo.id === w.id);
-                        newDiv.remove();
                         words.splice(index, 1);
-                        save()
+                        save();
+                        renderWords()
                     }
                 })
             }
         }
         function addWord() {
-            if (!wordInput.value || !translateInput.value || !langInput.value) return;
-            const newDiv = document.createElement('div');
-            const word = document.createElement('h2');
-            const pronunciation = document.createElement('h3');
-            const translate = document.createElement('h2');
-            const language = document.createElement('h2');
-            const deleteButton = document.createElement('button');
-
-            word.textContent = wordInput.value;
-            pronunciation.className = 'pronunciation';
-            pronunciation.textContent = `[${pronunciationInput.value}]`;
-            translate.textContent = translateInput.value;
-            language.textContent = langInput.value;
-            deleteButton.textContent = 'Delete';
-            deleteButton.className = 'deleteWordBtn';
-            newDiv.appendChild(word);
-            newDiv.appendChild(pronunciation);
-            newDiv.appendChild(translate);
-            newDiv.appendChild(language);
-            newDiv.appendChild(deleteButton);
-            wordsList.appendChild(newDiv);
+            if (!wordInput.value || !pronunciationInput.value || !translateInput.value || !langInput.value) return;
             const newWord = {id: nextId, word: wordInput.value, pronunciation: pronunciationInput.value, translate: translateInput.value, language: langInput.value};
             words.push(newWord);
             save();
-            deleteButton.addEventListener('click', () => {
-                if (confirm(`❌ Are you sure you want to delete ${word.textContent}?`)) {
-                    const index = words.findIndex(wo => wo.id === newWord.id);
-                    newDiv.remove();
-                    words.splice(index, 1);
-                    save()
-                }
-            })
+            renderWords();
+            nextId += 1;
             wordInput.value = '';
             pronunciationInput.value = '';
             translateInput.value = '';
             langInput.value = '';
-            nextId += 1
         }
         addBtn.addEventListener('click', () => { addWord() });
-        loadWords()
+        renderWords()
     </script>
 </body>
 </html>
