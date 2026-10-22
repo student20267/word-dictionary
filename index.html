@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>다국어 오리 🦆</title>
+</head>
+<body>
+    <h1>다국어 오리 🦆</h1>
+    <input type="text" id="word-input" placeholder="단어 입력">
+    <input type="text" id="pronunciation-input" placeholder="발음">
+    <input type="text" id="translate-input" placeholder="단어 번역">
+    <input type="text" id="lang" placeholder="언어" list="languages">
+    <datalist id="languages">
+        <option value="Korean / 한국어">ko</option>
+        <option value="English">en</option>
+        <option value="Japanese / 日本語">jp</option>
+        <option value="Chinese / 中文">cn</option>
+    </datalist>
+    <button id="add-btn">➕ 추가</button>
+    <br>
+    <br>
+    <div id="words"></div>
+    <style>
+        #words {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        #words > div {
+            box-sizing: border-box;
+            width: 300px;
+            height: 203px;
+            background-color: whitesmoke;
+            border: 1px solid #d3d3d3;
+        }
+        #words > div:hover {
+            box-shadow: 0px 5px 6px 2px #d3d3d3;
+        }
+        #words > div > p {
+            display: block;
+            font-size: 24px;
+            margin: 0;
+            margin-top: 10px;
+        }
+        .pronunciation {
+            color: #999;
+        }
+        .deleteWordBtn {
+            border: 1px solid #d3d3d3;
+            display: block;
+            margin: 0;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        const wordInput = document.getElementById('word-input');
+        const translateInput = document.getElementById('translate-input');
+        const langInput = document.getElementById('lang');
+        const addBtn = document.getElementById('add-btn');
+        const wordsList = document.getElementById('words');
+        const pronunciationInput = document.getElementById('pronunciation-input');
+        
+        let words = JSON.parse(localStorage.getItem('words')) || [];
+        let nextId = words.length > 0 ? Math.max(...words.map(w => w.id)) + 1 : 0;
+
+        function save() {
+            localStorage.setItem('words', JSON.stringify(words));
+        }
+        function loadWords() {
+            for (const w of words) {
+                const newDiv = document.createElement('div');
+                const word = document.createElement('h2');
+                const pronunciation = document.createElement('p');
+                const translate = document.createElement('p');
+                const language = document.createElement('p');
+                const deleteBtn = document.createElement('button');
+
+                word.textContent = w.word;
+                pronunciation.className = 'pronunciation';
+                pronunciation.textContent = `[${w.pronunciation}]`;
+                translate.textContent = w.translate;
+                language.textContent = w.language;
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.className = 'deleteWordBtn';
+                newDiv.appendChild(word);
+                newDiv.appendChild(pronunciation);
+                newDiv.appendChild(translate);
+                newDiv.appendChild(language);
+                newDiv.appendChild(deleteBtn);
+                wordsList.appendChild(newDiv);
+                deleteBtn.addEventListener('click', () => {
+                    if (confirm(`❌ Are you sure you want to delete ${word.textContent}?`)) {
+                        const index = words.findIndex(wo => wo.id === w.id);
+                        newDiv.remove();
+                        words.splice(index, 1);
+                        save()
+                    }
+                })
+            }
+        }
+        function addWord() {
+            if (!wordInput.value || !translateInput.value || !langInput.value) return;
+            const newDiv = document.createElement('div');
+            const word = document.createElement('h2');
+            const pronunciation = document.createElement('h3');
+            const translate = document.createElement('h2');
+            const language = document.createElement('h2');
+            const deleteButton = document.createElement('button');
+
+            word.textContent = wordInput.value;
+            pronunciation.className = 'pronunciation';
+            pronunciation.textContent = `[${pronunciationInput.value}]`;
+            translate.textContent = translateInput.value;
+            language.textContent = langInput.value;
+            deleteButton.textContent = 'Delete';
+            deleteButton.className = 'deleteWordBtn';
+            newDiv.appendChild(word);
+            newDiv.appendChild(pronunciation);
+            newDiv.appendChild(translate);
+            newDiv.appendChild(language);
+            newDiv.appendChild(deleteButton);
+            wordsList.appendChild(newDiv);
+            const newWord = {id: nextId, word: wordInput.value, pronunciation: pronunciationInput.value, translate: translateInput.value, language: langInput.value};
+            words.push(newWord);
+            save();
+            deleteButton.addEventListener('click', () => {
+                if (confirm(`❌ Are you sure you want to delete ${word.textContent}?`)) {
+                    const index = words.findIndex(wo => wo.id === newWord.id);
+                    newDiv.remove();
+                    words.splice(index, 1);
+                    save()
+                }
+            })
+            wordInput.value = '';
+            pronunciationInput.value = '';
+            translateInput.value = '';
+            langInput.value = '';
+            nextId += 1
+        }
+        addBtn.addEventListener('click', () => { addWord() });
+        loadWords()
+    </script>
+</body>
+</html>
