@@ -19,3 +19,7 @@ Clone the repo and open index.html
 
 ## What I learned
 I learned how to use JSON.stringify for `localStorage` and how to find the correct index for deleting words.
+
+## License
+
+MIT — see [LICENSE](LICENSE)
